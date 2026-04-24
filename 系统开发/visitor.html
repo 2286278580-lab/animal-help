@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>访客页面 - 湖北大学流浪动物救助信息管理系统</title>
+    <style>
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+            font-family:"Microsoft YaHei","PingFang SC",sans-serif;
+        }
+        /* 全局粉色系配色 */
+        :root {
+            --primary-pink: #f56fa9;
+            --light-pink: #f8a5c2;
+            --bg-pink: #fff5f7;
+            --white: #ffffff;
+            --gray: #666666;
+        }
+        body {
+            background-color: var(--bg-pink);
+            line-height: 1.6;
+        }
+        /* 顶部Banner：湖北大学实景图 + 粉色渐变遮罩 */
+        .banner {
+            width: 100%;
+            height: 400px;
+            background: linear-gradient(rgba(245, 111, 169, 0.6), rgba(248, 165, 194, 0.5)), 
+                        url('hubu_picture.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            text-align: center;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .banner h1 {
+            font-size: 42px;
+            margin-bottom: 15px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        .banner p {
+            font-size: 18px;
+            max-width: 800px;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.15);
+            margin-bottom: 30px;
+        }
+        .banner-buttons {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn-primary {
+            background: var(--primary-pink);
+            color: var(--white);
+        }
+        .btn-primary:hover {
+            background: var(--light-pink);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(245, 111, 169, 0.3);
+        }
+        .btn-secondary {
+            background: var(--white);
+            color: var(--primary-pink);
+            border: 2px solid var(--primary-pink);
+        }
+        .btn-secondary:hover {
+            background: var(--primary-pink);
+            color: var(--white);
+            transform: translateY(-2px);
+        }
+        /* 导航栏 */
+        .nav {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            background: var(--white);
+            padding: 18px 30px;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 99;
+        }
+        .nav a {
+            padding: 10px 20px;
+            background: var(--white);
+            border: 2px solid var(--light-pink);
+            color: var(--primary-pink);
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        .nav a:hover {
+            background: var(--primary-pink);
+            color: var(--white);
+            border-color: var(--primary-pink);
+            transform: translateY(-2px);
+            box-shadow: 0 3px 8px rgba(245, 111, 169, 0.3);
+        }
+        /* 容器 */
+        .container {
+            padding: 60px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        /* 介绍模块 */
+        .intro-section {
+            text-align: center;
+            margin-bottom: 80px;
+        }
+        .intro-section h2 {
+            font-size: 32px;
+            color: var(--primary-pink);
+            margin-bottom: 20px;
+            position: relative;
+        }
+        .intro-section h2::after {
+            content: '';
+            width: 80px;
+            height: 4px;
+            background: var(--light-pink);
+            border-radius: 2px;
+            display: block;
+            margin: 10px auto 0;
+        }
+        .intro-section p {
+            font-size: 16px;
+            color: var(--gray);
+            max-width: 800px;
+            margin: 0 auto 40px;
+        }
+        /* 功能模块 */
+        .feature-section {
+            margin-bottom: 80px;
+        }
+        .feature-section h2 {
+            font-size: 28px;
+            color: var(--primary-pink);
+            text-align: center;
+            margin-bottom: 40px;
+            position: relative;
+        }
+        .feature-section h2::after {
+            content: '';
+            width: 60px;
+            height: 4px;
+            background: var(--light-pink);
+            border-radius: 2px;
+            display: block;
+            margin: 10px auto 0;
+        }
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
+        }
+        .feature-card {
+            background: var(--white);
+            border-radius: 16px;
+            box-shadow: 0 6px 16px rgba(248, 165, 194, 0.15);
+            padding: 30px;
+            text-align: center;
+            transition: all 0.3s ease;
+            border-top: 5px solid var(--light-pink);
+        }
+        .feature-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 24px rgba(245, 111, 169, 0.2);
+        }
+        .feature-card h3 {
+            font-size: 22px;
+            margin-bottom: 15px;
+            color: var(--primary-pink);
+        }
+        .feature-card p {
+            color: var(--gray);
+            margin-bottom: 25px;
+        }
+        .feature-icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+        /* 角色介绍 */
+        .role-section {
+            margin-bottom: 80px;
+        }
+        .role-section h2 {
+            font-size: 28px;
+            color: var(--primary-pink);
+            text-align: center;
+            margin-bottom: 40px;
+            position: relative;
+        }
+        .role-section h2::after {
+            content: '';
+            width: 60px;
+            height: 4px;
+            background: var(--light-pink);
+            border-radius: 2px;
+            display: block;
+            margin: 10px auto 0;
+        }
+        .role-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        .role-card {
+            background: var(--white);
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(248, 165, 194, 0.15);
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        .role-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 16px rgba(245, 111, 169, 0.2);
+        }
+        .role-card h3 {
+            font-size: 18px;
+            color: var(--primary-pink);
+            margin-bottom: 10px;
+        }
+        .role-card p {
+            font-size: 14px;
+            color: var(--gray);
+            margin-bottom: 15px;
+        }
+        .role-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+        .badge-visitor {
+            background: #95a5a6;
+            color: var(--white);
+        }
+        .badge-user {
+            background: var(--primary-pink);
+            color: var(--white);
+        }
+        .badge-volunteer {
+            background: #4CAF50;
+            color: var(--white);
+        }
+        .badge-admin {
+            background: #3F51B5;
+            color: var(--white);
+        }
+        /* 页脚 */
+        .footer {
+            background: var(--white);
+            padding: 30px 20px;
+            text-align: center;
+            border-top: 1px solid var(--light-pink);
+        }
+        .footer p {
+            color: var(--gray);
+            font-size: 14px;
+        }
+        /* 响应式适配 */
+        @media (max-width: 768px) {
+            .banner h1 {
+                font-size: 28px;
+            }
+            .banner {
+                height: 300px;
+            }
+            .banner-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            .btn {
+                width: 200px;
+                text-align: center;
+            }
+            .nav {
+                padding: 15px;
+            }
+            .nav a {
+                padding: 8px 15px;
+                font-size: 14px;
+            }
+            .container {
+                padding: 40px 20px;
+            }
+            .feature-grid,
+            .role-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 湖北大学专属Banner -->
+    <div class="banner">
+        <h1><a href="visitor.html" style="color: var(--white); cursor: pointer;">湖北大学流浪动物救助信息管理系统</a></h1>
+        <p>守护校园生灵 | 规范救助管理 | 共建和谐湖大 | 透明化公益服务</p>
+        <div class="banner-buttons">
+            <a href="login.html" class="btn btn-primary">用户登录</a>
+            <a href="register.html" class="btn btn-secondary">立即注册</a>
+        </div>
+    </div>
+
+    <!-- 导航栏 -->
+    <div class="nav">
+        <a href="visitor.html">首页</a>
+        <a href="#about">关于我们</a>
+        <a href="#features">系统功能</a>
+        <a href="#roles">角色介绍</a>
+        <a href="login.html">用户登录</a>
+        <a href="register.html">立即注册</a>
+    </div>
+
+    <!-- 主要内容 -->
+    <div class="container">
+        <!-- 介绍部分 -->
+        <section class="intro-section" id="about">
+            <h2>关于我们</h2>
+            <p>湖北大学流浪动物救助信息管理系统是一个专门为校园流浪动物救助工作设计的综合性管理平台。我们致力于通过信息化手段，规范救助流程，提高管理效率，为校园流浪动物提供更好的关爱和保护。</p>
+            <p>系统支持动物档案管理、TNR流程跟踪、领养管理、志愿者管理、物资管理、报销管理和安全事件处理等核心功能，为校园流浪动物救助工作提供全方位的支持。</p>
+        </section>
+
+        <!-- 功能模块 -->
+        <section class="feature-section" id="features">
+            <h2>系统功能</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🐱</div>
+                    <h3>动物档案管理</h3>
+                    <p>建立完整的动物档案，记录动物的基本信息、健康状况、性格评估等数据，实现动物信息的规范化管理。</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🏥</div>
+                    <h3>TNR流程管理</h3>
+                    <p>跟踪动物的诱捕、绝育、放归全流程，科学控制校园动物数量，保障动物健康。</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🏠</div>
+                    <h3>领养管理</h3>
+                    <p>管理领养申请，进行身份验证，签署电子协议，跟踪回访情况，确保动物找到合适的家。</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">👥</div>
+                    <h3>志愿者管理</h3>
+                    <p>管理志愿者信息，分配任务，协调工作，记录志愿者服务时长和贡献。</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📦</div>
+                    <h3>物资管理</h3>
+                    <p>管理投喂点、物资库存、借还台账，确保救助物资的合理分配和使用。</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">💰</div>
+                    <h3>报销管理</h3>
+                    <p>管理救助费用，上传凭证，进行多级审批，确保财务透明。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 角色介绍 -->
+        <section class="role-section" id="roles">
+            <h2>角色介绍</h2>
+            <div class="role-grid">
+                <div class="role-card">
+                    <div class="role-badge badge-visitor">访客</div>
+                    <h3>访客</h3>
+                    <p>浏览系统信息，了解救助工作，查看动物档案，申请成为志愿者。</p>
+                </div>
+                <div class="role-card">
+                    <div class="role-badge badge-user">普通用户</div>
+                    <h3>普通用户</h3>
+                    <p>浏览动物信息，申请领养，参与捐赠，了解救助动态。</p>
+                </div>
+                <div class="role-card">
+                    <div class="role-badge badge-volunteer">志愿者</div>
+                    <h3>志愿者</h3>
+                    <p>参与救助活动，管理任务，记录工作，提交报表。</p>
+                </div>
+                <div class="role-card">
+                    <div class="role-badge badge-admin">管理员</div>
+                    <h3>管理员</h3>
+                    <p>系统管理，用户管理，数据监控，权限分配。</p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <p>© 2026 湖北大学流浪动物救助信息管理系统. 版权所有.</p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>物资管理</title>
+    <style>
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+            font-family:"Microsoft YaHei","PingFang SC",sans-serif;
+        }
+        /* 全局粉色系配色 */
+        :root {
+            --primary-pink: #f56fa9;
+            --light-pink: #f8a5c2;
+            --bg-pink: #fff5f7;
+            --white: #ffffff;
+            --gray: #666666;
+        }
+        body {
+            background-color: var(--bg-pink);
+            line-height: 1.6;
+        }
+        /* 顶部Banner：湖北大学实景图 + 粉色渐变遮罩 */
+        .banner {
+            width: 100%;
+            height: 380px;
+            background: linear-gradient(rgba(245, 111, 169, 0.6), rgba(248, 165, 194, 0.5)), 
+                        url('hubu_picture.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            text-align: center;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .banner h1 {
+            font-size: 42px;
+            margin-bottom: 15px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        .banner p {
+            font-size: 18px;
+            max-width: 800px;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.15);
+        }
+        /* 导航栏 */
+        .nav {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            background: var(--white);
+            padding: 18px 30px;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 99;
+        }
+        .nav a {
+            padding: 10px 20px;
+            background: var(--white);
+            border: 2px solid var(--light-pink);
+            color: var(--primary-pink);
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        .nav a:hover {
+            background: var(--primary-pink);
+            color: var(--white);
+            border-color: var(--primary-pink);
+            transform: translateY(-2px);
+            box-shadow: 0 3px 8px rgba(245, 111, 169, 0.3);
+        }
+        /* 容器 */
+        .container {
+            padding: 40px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .container h2 {
+            text-align: center;
+            font-size: 32px;
+            color: var(--primary-pink);
+            margin-bottom: 40px;
+            position: relative;
+        }
+        .container h2::after {
+            content: '';
+            width: 80px;
+            height: 4px;
+            background: var(--light-pink);
+            border-radius: 2px;
+            display: block;
+            margin: 10px auto 0;
+        }
+        /* 专业数据表通用样式 - 粉色系适配 */ 
+        .data-table { 
+          width: 100%; 
+          border-collapse: collapse; 
+          margin: 20px 0; 
+          background: #fff; 
+          border-radius: 8px; 
+          overflow: hidden; 
+          box-shadow: 0 2px 10px rgba(245, 111, 169, 0.1); 
+        } 
+        .data-table thead { 
+          background: #f56fa9; 
+          color: #fff; 
+          font-size: 15px; 
+          font-weight: 600; 
+        } 
+        .data-table th, .data-table td { 
+          padding: 12px 15px; 
+          text-align: left; 
+          border-bottom: 1px solid #f8a5c2; 
+        } 
+        .data-table tbody tr:nth-child(even) { 
+          background: #fff5f7; 
+        } 
+        .data-table tbody tr:hover { 
+          background: rgba(248, 165, 194, 0.2); 
+        } 
+        .data-table .pk { color: #e74c3c; font-weight: 600; } 
+        .data-table .fk { color: #3498db; font-weight: 600; } 
+        .data-table .not-null { color: #f39c12; } 
+        .table-title { 
+          font-size: 18px; 
+          color: #f56fa9; 
+          font-weight: 600; 
+          margin: 30px 0 10px; 
+          border-left: 4px solid #f56fa9; 
+          padding-left: 10px; 
+        } 
+        .table-desc { 
+          font-size: 14px; 
+          color: #666; 
+          margin-bottom: 10px; 
+        } 
+        .supply-box { 
+          margin-top: 40px; 
+        } 
+        /* 响应式适配 */
+        @media (max-width: 768px) {
+            .banner h1 {
+                font-size: 28px;
+            }
+            .banner {
+                height: 300px;
+            }
+            .nav {
+                padding: 15px;
+            }
+            .nav a {
+                padding: 8px 15px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 湖北大学专属Banner -->
+    <div class="banner">
+        <h1><a href="visitor.html" style="color: var(--white); text-decoration: none; cursor: pointer;">湖北大学流浪动物救助信息管理系统</a></h1>
+        <p>守护校园生灵 | 规范救助管理 | 共建和谐湖大 | 透明化公益服务</p>
+    </div>
+
+    <!-- 导航栏 -->
+    <div class="nav">
+        <a href="index.html">首页</a>
+        <a href="animal.html">动物档案</a>
+        <a href="tnr.html">TNR管理</a>
+        <a href="adopt.html">领养管理</a>
+        <a href="volunteer.html">志愿者管理</a>
+        <a href="supply.html">物资管理</a>
+        <a href="reimburse.html">报销管理</a>
+        <a href="safety.html">安全事件</a>
+    </div>
+
+    <!-- 物资管理内容 -->
+    <div class="container">
+        <h2>物资与投喂点管理</h2>
+
+        <!-- 物资临期预警提示 -->
+        <div id="expiryWarning" class="alert alert-warning" style="display: none; background: #fff3cd; border: 1px solid #ffc107; border-radius: 8px; padding: 15px; margin-bottom: 20px;">
+            <strong>⚠️ 物资临期预警：</strong>
+            <span id="expiryMessage"></span>
+            <button class="btn btn-primary" style="margin-left: 20px;" onclick="exportExpiringSupplies()">一键导出临期清单</button>
+        </div>
+
+        <div class="action-bar">
+            <button class="btn btn-primary" onclick="showAddSupplyForm()">添加物资</button>
+            <button class="btn btn-secondary" onclick="refreshSupplies()">刷新数据</button>
+        </div>
+
+        <div class="table-title">物资库存列表</div>
+        <table class="data-table" id="supplyTable">
+            <thead>
+                <tr>
+                    <th>物资编号</th>
+                    <th>物资名称</th>
+                    <th>库存量</th>
+                    <th>单位</th>
+                    <th>存放位置</th>
+                    <th>来源</th>
+                    <th>有效期</th>
+                    <th>状态</th>
+                </tr>
+            </thead>
+            <tbody id="supplyTableBody">
+                <tr>
+                    <td class="pk">SUP-001</td>
+                    <td>皇家猫粮</td>
+                    <td>5.00</td>
+                    <td>kg</td>
+                    <td>社团办公室2层货架</td>
+                    <td>捐赠</td>
+                    <td class="expiry-cell">2025-02-28</td>
+                    <td class="status-cell">-</td>
+                </tr>
+                <tr>
+                    <td class="pk">SUP-002</td>
+                    <td>诱捕笼</td>
+                    <td>3.00</td>
+                    <td>个</td>
+                    <td>社团仓库</td>
+                    <td>自购</td>
+                    <td>长期有效</td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <td class="pk">SUP-003</td>
+                    <td>猫罐头</td>
+                    <td>10.00</td>
+                    <td>箱</td>
+                    <td>社团办公室1层货架</td>
+                    <td>捐赠</td>
+                    <td class="expiry-cell">2025-03-15</td>
+                    <td class="status-cell">-</td>
+                </tr>
+                <tr>
+                    <td class="pk">SUP-004</td>
+                    <td>狂犬疫苗</td>
+                    <td>20.00</td>
+                    <td>支</td>
+                    <td>校医院冷柜</td>
+                    <td>采购</td>
+                    <td class="expiry-cell">2025-04-10</td>
+                    <td class="status-cell">-</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- 添加物资表单 -->
+        <div id="addSupplyForm" class="form-container" style="display: none;">
+            <h3>添加物资</h3>
+            <form id="supplyForm">
+                <div class="form-group">
+                    <label for="supplyName">物资名称 <span style="color: red;">*</span></label>
+                    <input type="text" id="supplyName" name="supplyName" required>
+                </div>
+                <div class="form-group">
+                    <label for="quantity">库存量 <span style="color: red;">*</span></label>
+                    <input type="number" id="quantity" name="quantity" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label for="unit">单位</label>
+                    <input type="text" id="unit" name="unit" value="个">
+                </div>
+                <div class="form-group">
+                    <label for="location">存放位置</label>
+                    <input type="text" id="location" name="location">
+                </div>
+                <div class="form-group">
+                    <label for="source">来源</label>
+                    <select id="source" name="source">
+                        <option value="捐赠">捐赠</option>
+                        <option value="自购">自购</option>
+                        <option value="采购">采购</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="expiry">有效期</label>
+                    <input type="date" id="expiry" name="expiry">
+                </div>
+                <div class="action-bar">
+                    <button type="submit" class="btn btn-primary">保存</button>
+                    <button type="button" class="btn btn-secondary" onclick="hideAddSupplyForm()">取消</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="supply-box">
+            <div class="table-title">物资借还记录</div>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>借还编号</th>
+                        <th>物资名称</th>
+                        <th>借用人</th>
+                        <th>借出时间</th>
+                        <th>预计归还</th>
+                        <th>实际归还</th>
+                        <th>状态</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="pk">LOAN-001</td>
+                        <td class="fk">诱捕笼</td>
+                        <td>张三</td>
+                        <td>2026-04-01</td>
+                        <td>2026-04-03</td>
+                        <td>2026-04-03</td>
+                        <td>已归还</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="supply-box">
+            <div class="table-title">投喂点信息</div>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>投喂点编号</th>
+                        <th>位置</th>
+                        <th>负责人</th>
+                        <th>猫口数量</th>
+                        <th>投喂规则</th>
+                        <th>审批状态</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="pk">Feed-01</td>
+                        <td>3号宿舍楼后花园</td>
+                        <td>张三</td>
+                        <td>5</td>
+                        <td>早晚定时</td>
+                        <td>已批准</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // 页面加载时检查物资临期情况
+        document.addEventListener('DOMContentLoaded', function() {
+            refreshSupplies();
+            checkExpiryWarnings();
+        });
+
+        // 检查物资临期情况
+        function checkExpiryWarnings() {
+            const today = new Date();
+            const warningThreshold = 30; // 30天内临期
+            const expiringItems = [];
+
+            const rows = document.querySelectorAll('#supplyTableBody tr');
+            rows.forEach(row => {
+                const expiryCell = row.querySelector('.expiry-cell');
+                if (expiryCell) {
+                    const expiryText = expiryCell.textContent;
+                    if (expiryText && expiryText !== '长期有效' && expiryText !== '-') {
+                        const expiryDate = new Date(expiryText);
+                        const diffTime = expiryDate - today;
+                        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+                        const statusCell = row.querySelector('.status-cell');
+                        if (diffDays <= 0) {
+                            // 已过期
+                            expiryCell.style.background = '#f8d7da';
+                            expiryCell.style.color = '#721c24';
+                            if (statusCell) statusCell.textContent = '已过期';
+                            if (statusCell) statusCell.style.color = '#dc3545';
+                            expiringItems.push({
+                                id: row.cells[0].textContent,
+                                name: row.cells[1].textContent,
+                                expiry: expiryText,
+                                status: '已过期'
+                            });
+                        } else if (diffDays <= warningThreshold) {
+                            // 30天内临期
+                            expiryCell.style.background = '#fff3cd';
+                            expiryCell.style.color = '#856404';
+                            if (statusCell) statusCell.textContent = '临期';
+                            if (statusCell) statusCell.style.color = '#856404';
+                            expiringItems.push({
+                                id: row.cells[0].textContent,
+                                name: row.cells[1].textContent,
+                                expiry: expiryText,
+                                status: '临期（' + diffDays + '天）'
+                            });
+                        }
+                    }
+                }
+            });
+
+            // 显示预警提示
+            if (expiringItems.length > 0) {
+                const warningDiv = document.getElementById('expiryWarning');
+                const messageSpan = document.getElementById('expiryMessage');
+                warningDiv.style.display = 'block';
+
+                let message = '以下物资即将过期或已过期：';
+                expiringItems.forEach(item => {
+                    message += ' [' + item.id + ' ' + item.name + ' - ' + item.status + ']';
+                });
+                messageSpan.textContent = message;
+            }
+        }
+
+        // 导出临期物资清单
+        function exportExpiringSupplies() {
+            const rows = document.querySelectorAll('#supplyTableBody tr');
+            let exportContent = '物资临期清单导出\n';
+            exportContent += '导出时间：' + new Date().toLocaleString() + '\n\n';
+            exportContent += '编号\t名称\t有效期\t状态\n';
+
+            const expiringItems = [];
+            rows.forEach(row => {
+                const expiryCell = row.querySelector('.expiry-cell');
+                const statusCell = row.querySelector('.status-cell');
+                if (expiryCell && (statusCell.textContent === '临期' || statusCell.textContent === '已过期')) {
+                    exportContent += row.cells[0].textContent + '\t' +
+                                   row.cells[1].textContent + '\t' +
+                                   expiryCell.textContent + '\t' +
+                                   statusCell.textContent + '\n';
+                    expiringItems.push(row);
+                }
+            });
+
+            // 创建下载
+            const blob = new Blob([exportContent], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = '临期物资清单_' + new Date().toISOString().slice(0, 10) + '.txt';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // 刷新物资数据
+        function refreshSupplies() {
+            checkExpiryWarnings();
+        }
+
+        // 显示添加物资表单
+        function showAddSupplyForm() {
+            document.getElementById('addSupplyForm').style.display = 'block';
+            document.getElementById('supplyForm').reset();
+        }
+
+        // 隐藏添加物资表单
+        function hideAddSupplyForm() {
+            document.getElementById('addSupplyForm').style.display = 'none';
+        }
+
+        // 提交物资表单
+        document.getElementById('supplyForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const name = document.getElementById('supplyName').value;
+            const quantity = document.getElementById('quantity').value;
+            const unit = document.getElementById('unit').value;
+            const location = document.getElementById('location').value;
+            const source = document.getElementById('source').value;
+            const expiry = document.getElementById('expiry').value;
+
+            if (!name || !quantity) {
+                alert('请填写必填项');
+                return;
+            }
+
+            // 模拟添加成功
+            alert('添加物资成功！');
+            hideAddSupplyForm();
+            refreshSupplies();
+        });
+    </script>
+</body>
+</html>

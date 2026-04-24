@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TNR流程管理</title>
+    <style>
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+            font-family:"Microsoft YaHei","PingFang SC",sans-serif;
+        }
+        /* 全局粉色系配色 */
+        :root {
+            --primary-pink: #f56fa9;
+            --light-pink: #f8a5c2;
+            --bg-pink: #fff5f7;
+            --white: #ffffff;
+            --gray: #666666;
+        }
+        body {
+            background-color: var(--bg-pink);
+            line-height: 1.6;
+        }
+        /* 顶部Banner：湖北大学实景图 + 粉色渐变遮罩 */
+        .banner {
+            width: 100%;
+            height: 380px;
+            background: linear-gradient(rgba(245, 111, 169, 0.6), rgba(248, 165, 194, 0.5)), 
+                        url('hubu_picture.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            text-align: center;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .banner h1 {
+            font-size: 42px;
+            margin-bottom: 15px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        .banner p {
+            font-size: 18px;
+            max-width: 800px;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.15);
+        }
+        /* 导航栏 */
+        .nav {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            background: var(--white);
+            padding: 18px 30px;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 99;
+        }
+        .nav a {
+            padding: 10px 20px;
+            background: var(--white);
+            border: 2px solid var(--light-pink);
+            color: var(--primary-pink);
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        .nav a:hover {
+            background: var(--primary-pink);
+            color: var(--white);
+            border-color: var(--primary-pink);
+            transform: translateY(-2px);
+            box-shadow: 0 3px 8px rgba(245, 111, 169, 0.3);
+        }
+        /* 容器 */
+        .container {
+            padding: 40px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .container h2 {
+            text-align: center;
+            font-size: 32px;
+            color: var(--primary-pink);
+            margin-bottom: 40px;
+            position: relative;
+        }
+        .container h2::after {
+            content: '';
+            width: 80px;
+            height: 4px;
+            background: var(--light-pink);
+            border-radius: 2px;
+            display: block;
+            margin: 10px auto 0;
+        }
+        /* 专业数据表通用样式 - 粉色系适配 */ 
+        .data-table { 
+          width: 100%; 
+          border-collapse: collapse; 
+          margin: 20px 0; 
+          background: #fff; 
+          border-radius: 8px; 
+          overflow: hidden; 
+          box-shadow: 0 2px 10px rgba(245, 111, 169, 0.1); 
+        } 
+        .data-table thead { 
+          background: #f56fa9; 
+          color: #fff; 
+          font-size: 15px; 
+          font-weight: 600; 
+        } 
+        .data-table th, .data-table td { 
+          padding: 12px 15px; 
+          text-align: left; 
+          border-bottom: 1px solid #f8a5c2; 
+        } 
+        .data-table tbody tr:nth-child(even) { 
+          background: #fff5f7; 
+        } 
+        .data-table tbody tr:hover { 
+          background: rgba(248, 165, 194, 0.2); 
+        } 
+        .data-table .pk { color: #e74c3c; font-weight: 600; } 
+        .data-table .fk { color: #3498db; font-weight: 600; } 
+        .data-table .not-null { color: #f39c12; } 
+        .table-title { 
+          font-size: 18px; 
+          color: #f56fa9; 
+          font-weight: 600; 
+          margin: 30px 0 10px; 
+          border-left: 4px solid #f56fa9; 
+          padding-left: 10px; 
+        } 
+        .table-desc { 
+          font-size: 14px; 
+          color: #666; 
+          margin-bottom: 10px; 
+        } 
+        /* 响应式适配 */
+        @media (max-width: 768px) {
+            .banner h1 {
+                font-size: 28px;
+            }
+            .banner {
+                height: 300px;
+            }
+            .nav {
+                padding: 15px;
+            }
+            .nav a {
+                padding: 8px 15px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 湖北大学专属Banner -->
+    <div class="banner">
+        <h1><a href="visitor.html" style="color: var(--white); text-decoration: none; cursor: pointer;">湖北大学流浪动物救助信息管理系统</a></h1>
+        <p>守护校园生灵 | 规范救助管理 | 共建和谐湖大 | 透明化公益服务</p>
+    </div>
+
+    <!-- 导航栏 -->
+    <div class="nav">
+        <a href="index.html">首页</a>
+        <a href="animal.html">动物档案</a>
+        <a href="tnr.html">TNR管理</a>
+        <a href="adopt.html">领养管理</a>
+        <a href="volunteer.html">志愿者管理</a>
+        <a href="supply.html">物资管理</a>
+        <a href="reimburse.html">报销管理</a>
+        <a href="safety.html">安全事件</a>
+    </div>
+
+    <!-- TNR流程管理内容 -->
+    <div class="container">
+        <h2>TNR流程管理</h2>
+        
+        <!-- 操作栏 -->
+        <div class="action-bar" style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;">
+            <button class="btn btn-primary" onclick="showTNRForm()" style="padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; transition: all 0.3s ease; background: var(--primary-pink); color: var(--white);">发起TNR申请</button>
+            <button class="btn btn-secondary" onclick="refreshTNR()" style="padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; transition: all 0.3s ease; background: var(--white); color: var(--primary-pink); border: 1px solid var(--primary-pink);">刷新数据</button>
+        </div>
+        
+        <!-- TNR申请表单 -->
+        <div id="tnrForm" class="form-container" style="display: none; background: var(--white); padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(245, 111, 169, 0.1); margin-bottom: 20px;">
+            <h3>TNR申请</h3>
+            <form id="tnrApplicationForm">
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <label for="animalId" style="display: block; margin-bottom: 5px; font-weight: 500; color: var(--gray);">涉事动物 <span style="color: red;">*</span></label>
+                    <select id="animalId" name="animalId" required style="width: 100%; padding: 8px; border: 1px solid var(--light-pink); border-radius: 4px; font-size: 14px;">
+                        <option value="">请选择动物</option>
+                        <option value="CAMPUS-CAT-001">CAMPUS-CAT-001（橘白相间）</option>
+                        <option value="CAMPUS-DOG-001">CAMPUS-DOG-001（黄白相间）</option>
+                    </select>
+                </div>
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <label for="trapTime" style="display: block; margin-bottom: 5px; font-weight: 500; color: var(--gray);">诱捕时间 <span style="color: red;">*</span></label>
+                    <input type="datetime-local" id="trapTime" name="trapTime" required style="width: 100%; padding: 8px; border: 1px solid var(--light-pink); border-radius: 4px; font-size: 14px;">
+                </div>
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <label for="surgeryType" style="display: block; margin-bottom: 5px; font-weight: 500; color: var(--gray);">手术类型 <span style="color: red;">*</span></label>
+                    <select id="surgeryType" name="surgeryType" required style="width: 100%; padding: 8px; border: 1px solid var(--light-pink); border-radius: 4px; font-size: 14px;">
+                        <option value="">请选择手术类型</option>
+                        <option value="公猫绝育">公猫绝育</option>
+                        <option value="母猫绝育">母猫绝育</option>
+                        <option value="公狗绝育">公狗绝育</option>
+                        <option value="母狗绝育">母狗绝育</option>
+                    </select>
+                </div>
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <label for="releaseLocation" style="display: block; margin-bottom: 5px; font-weight: 500; color: var(--gray);">放归地点 <span style="color: red;">*</span></label>
+                    <input type="text" id="releaseLocation" name="releaseLocation" required style="width: 100%; padding: 8px; border: 1px solid var(--light-pink); border-radius: 4px; font-size: 14px;">
+                </div>
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <label for="witness" style="display: block; margin-bottom: 5px; font-weight: 500; color: var(--gray);">见证人 <span style="color: red;">*</span></label>
+                    <input type="text" id="witness" name="witness" required style="width: 100%; padding: 8px; border: 1px solid var(--light-pink); border-radius: 4px; font-size: 14px;">
+                </div>
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <label for="applicant" style="display: block; margin-bottom: 5px; font-weight: 500; color: var(--gray);">申请人 <span style="color: red;">*</span></label>
+                    <input type="text" id="applicant" name="applicant" required style="width: 100%; padding: 8px; border: 1px solid var(--light-pink); border-radius: 4px; font-size: 14px;">
+                </div>
+                <div class="action-bar" style="display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap;">
+                    <button type="submit" class="btn btn-primary" style="padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; transition: all 0.3s ease; background: var(--primary-pink); color: var(--white);">提交申请</button>
+                    <button type="button" class="btn btn-secondary" onclick="hideTNRForm()" style="padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; transition: all 0.3s ease; background: var(--white); color: var(--primary-pink); border: 1px solid var(--primary-pink);">取消</button>
+                </div>
+            </form>
+        </div>
+        
+        <div class="table-title">TNR记录列表</div>
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>记录编号</th>
+                    <th>涉事动物</th>
+                    <th>诱捕时间</th>
+                    <th>手术类型</th>
+                    <th>放归地点</th>
+                    <th>见证人</th>
+                    <th>流程状态</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody id="tnrTableBody">
+                <tr>
+                    <td class="pk">TNR-20260401-001</td>
+                    <td class="fk">CAMPUS-CAT-001</td>
+                    <td>2026-04-01 18:00</td>
+                    <td>公猫绝育</td>
+                    <td>3号宿舍楼后花园</td>
+                    <td>张三</td>
+                    <td>已放归</td>
+                    <td>
+                        <button class="btn btn-secondary" onclick="completeTNR('TNR-20260401-001')" style="padding: 4px 8px; border: none; border-radius: 4px; cursor: pointer; font-size: 12px; transition: all 0.3s ease; background: var(--white); color: var(--primary-pink); border: 1px solid var(--primary-pink);">完成放归</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <div class="table-title" style="margin-top: 30px;">投喂点绝育率统计</div>
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>投喂点ID</th>
+                    <th>投喂点位置</th>
+                    <th>动物总数</th>
+                    <th>已绝育数</th>
+                    <th>绝育率</th>
+                </tr>
+            </thead>
+            <tbody id="sterilizationRateBody">
+                <tr>
+                    <td>Feed-01</td>
+                    <td>3号宿舍楼后花园</td>
+                    <td>5</td>
+                    <td>3</td>
+                    <td>60%</td>
+                </tr>
+                <tr>
+                    <td>Feed-03</td>
+                    <td>图书馆前广场</td>
+                    <td>3</td>
+                    <td>2</td>
+                    <td>66.67%</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    
+    <script>
+        // 模拟TNR记录数据
+        let tnrRecords = [
+            {
+                id: 'TNR-20260401-001',
+                animalId: 'CAMPUS-CAT-001',
+                trapTime: '2026-04-01 18:00',
+                surgeryType: '公猫绝育',
+                releaseLocation: '3号宿舍楼后花园',
+                witness: '张三',
+                status: '已放归',
+                applicant: '李四',
+                releaseDate: '2026-04-02'
+            }
+        ];
+        
+        // 模拟投喂点数据
+        let feedingPoints = [
+            {
+                id: 'Feed-01',
+                location: '3号宿舍楼后花园',
+                totalAnimals: 5,
+                sterilizedAnimals: 3
+            },
+            {
+                id: 'Feed-03',
+                location: '图书馆前广场',
+                totalAnimals: 3,
+                sterilizedAnimals: 2
+            }
+        ];
+        
+        // 显示TNR申请表单
+        function showTNRForm() {
+            document.getElementById('tnrForm').style.display = 'block';
+            document.getElementById('tnrApplicationForm').reset();
+        }
+        
+        // 隐藏TNR申请表单
+        function hideTNRForm() {
+            document.getElementById('tnrForm').style.display = 'none';
+        }
+        
+        // 提交TNR申请
+        document.getElementById('tnrApplicationForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const animalId = document.getElementById('animalId').value;
+            const trapTime = document.getElementById('trapTime').value;
+            const surgeryType = document.getElementById('surgeryType').value;
+            const releaseLocation = document.getElementById('releaseLocation').value;
+            const witness = document.getElementById('witness').value;
+            const applicant = document.getElementById('applicant').value;
+            
+            // 表单验证
+            if (!animalId || !trapTime || !surgeryType || !releaseLocation || !witness || !applicant) {
+                alert('请填写所有必填项');
+                return;
+            }
+            
+            // 检查60天内是否有重复申请
+            const today = new Date();
+            const sixtyDaysAgo = new Date(today.getTime() - 60 * 24 * 60 * 60 * 1000);
+            
+            const recentTNR = tnrRecords.find(record => {
+                const recordDate = new Date(record.trapTime);
+                return record.animalId === animalId && recordDate >= sixtyDaysAgo;
+            });
+            
+            if (recentTNR) {
+                alert('该动物近期已完成 TNR，请勿重复申请');
+                return;
+            }
+            
+            // 生成TNR记录编号
+            const dateStr = today.toISOString().slice(0, 10).replace(/-/g, '');
+            const sequence = (tnrRecords.length + 1).toString().padStart(3, '0');
+            const tnrId = `TNR-${dateStr}-${sequence}`;
+            
+            // 创建新的TNR记录
+            const newTNR = {
+                id: tnrId,
+                animalId: animalId,
+                trapTime: trapTime.replace('T', ' '),
+                surgeryType: surgeryType,
+                releaseLocation: releaseLocation,
+                witness: witness,
+                status: '待手术',
+                applicant: applicant
+            };
+            
+            tnrRecords.push(newTNR);
+            alert('TNR申请提交成功！');
+            hideTNRForm();
+            refreshTNR();
+        });
+        
+        // 完成TNR放归
+        function completeTNR(tnrId) {
+            const tnr = tnrRecords.find(record => record.id === tnrId);
+            if (tnr) {
+                // 验证见证人不是申请人
+                if (tnr.witness === tnr.applicant) {
+                    alert('必须填写非申请人的见证人');
+                    return;
+                }
+                
+                tnr.status = '已放归';
+                tnr.releaseDate = new Date().toISOString().slice(0, 10);
+                
+                // 更新投喂点绝育率
+                updateSterilizationRate(tnr.animalId, tnr.releaseLocation);
+                
+                alert('TNR放归完成！');
+                refreshTNR();
+            }
+        }
+        
+        // 更新投喂点绝育率
+        function updateSterilizationRate(animalId, location) {
+            // 找到对应的投喂点
+            const point = feedingPoints.find(p => p.location === location);
+            if (point) {
+                point.sterilizedAnimals += 1;
+                // 重新计算绝育率
+                const rate = (point.sterilizedAnimals / point.totalAnimals * 100).toFixed(2);
+                console.log(`投喂点 ${point.id} 的绝育率更新为 ${rate}%`);
+            }
+        }
+        
+        // 刷新TNR数据
+        function refreshTNR() {
+            const tbody = document.getElementById('tnrTableBody');
+            tbody.innerHTML = '';
+            
+            tnrRecords.forEach(record => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="pk">${record.id}</td>
+                    <td class="fk">${record.animalId}</td>
+                    <td>${record.trapTime}</td>
+                    <td>${record.surgeryType}</td>
+                    <td>${record.releaseLocation}</td>
+                    <td>${record.witness}</td>
+                    <td>${record.status}</td>
+                    <td>
+                        ${record.status !== '已放归' ? `<button class="btn btn-secondary" onclick="completeTNR('${record.id}')" style="padding: 4px 8px; border: none; border-radius: 4px; cursor: pointer; font-size: 12px; transition: all 0.3s ease; background: var(--white); color: var(--primary-pink); border: 1px solid var(--primary-pink);">完成放归</button>` : '-'}
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+            
+            // 更新绝育率表格
+            const rateBody = document.getElementById('sterilizationRateBody');
+            rateBody.innerHTML = '';
+            
+            feedingPoints.forEach(point => {
+                const rate = (point.sterilizedAnimals / point.totalAnimals * 100).toFixed(2);
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${point.id}</td>
+                    <td>${point.location}</td>
+                    <td>${point.totalAnimals}</td>
+                    <td>${point.sterilizedAnimals}</td>
+                    <td>${rate}%</td>
+                `;
+                rateBody.appendChild(row);
+            });
+        }
+        
+        // 页面加载时刷新数据
+        document.addEventListener('DOMContentLoaded', function() {
+            refreshTNR();
+        });
+    </script>
+</body>
+</html>	
