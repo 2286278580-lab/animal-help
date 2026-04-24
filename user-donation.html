@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>物资捐赠 - 湖北大学流浪动物救助信息管理系统</title>
+    <style>
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+            font-family:"Microsoft YaHei","PingFang SC",sans-serif;
+        }
+        /* 全局粉色系配色 */
+        :root {
+            --primary-pink: #f56fa9;
+            --light-pink: #f8a5c2;
+            --bg-pink: #fff5f7;
+            --white: #ffffff;
+            --gray: #666666;
+            --user-color: #4CAF50;
+            --user-light: #81C784;
+        }
+        body {
+            background-color: var(--bg-pink);
+            line-height: 1.6;
+        }
+        /* 顶部Banner：湖北大学实景图 + 粉色渐变遮罩 */
+        .banner {
+            width: 100%;
+            height: 150px;
+            background: linear-gradient(rgba(245, 111, 169, 0.6), rgba(248, 165, 194, 0.5)), 
+                        url('hubu_picture.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            text-align: center;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .banner h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        /* 导航栏 */
+        .nav {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            background: var(--white);
+            padding: 15px 20px;
+            justify-content: space-between;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 99;
+        }
+        .nav-left {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .nav a {
+            padding: 8px 16px;
+            background: var(--white);
+            border: 2px solid var(--light-pink);
+            color: var(--primary-pink);
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 500;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        .nav a:hover {
+            background: var(--primary-pink);
+            color: var(--white);
+            border-color: var(--primary-pink);
+            transform: translateY(-2px);
+            box-shadow: 0 3px 8px rgba(245, 111, 169, 0.3);
+        }
+        .nav a.active {
+            background: var(--user-color);
+            color: var(--white);
+            border-color: var(--user-color);
+        }
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--user-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-weight: 600;
+        }
+        /* 容器 */
+        .container {
+            padding: 30px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        /* 页面标题 */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        .page-header h2 {
+            font-size: 24px;
+            color: var(--primary-pink);
+            position: relative;
+        }
+        .page-header h2::after {
+            content: '';
+            width: 60px;
+            height: 4px;
+            background: var(--light-pink);
+            border-radius: 2px;
+            display: block;
+            margin-top: 8px;
+        }
+        /* 捐赠指南 */
+        .donation-guide {
+            background: var(--white);
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(248, 165, 194, 0.15);
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        .donation-guide h3 {
+            font-size: 20px;
+            color: var(--primary-pink);
+            margin-bottom: 15px;
+        }
+        .donation-guide p {
+            font-size: 16px;
+            color: var(--gray);
+            margin-bottom: 10px;
+        }
+        .donation-guide ul {
+            margin-left: 20px;
+            margin-bottom: 15px;
+        }
+        .donation-guide li {
+            margin-bottom: 5px;
+            color: var(--gray);
+        }
+        /* 捐赠表单 */
+        .donation-form {
+            background: var(--white);
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(248, 165, 194, 0.15);
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        .donation-form h3 {
+            font-size: 20px;
+            color: var(--primary-pink);
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: var(--gray);
+        }
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid var(--light-pink);
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn-primary {
+            background: var(--user-color);
+            color: var(--white);
+        }
+        .btn-primary:hover {
+            background: var(--user-light);
+            transform: translateY(-2px);
+            box-shadow: 0 3px 8px rgba(76, 175, 80, 0.3);
+        }
+        .btn-secondary {
+            background: var(--white);
+            color: var(--user-color);
+            border: 2px solid var(--user-color);
+        }
+        .btn-secondary:hover {
+            background: var(--user-color);
+            color: var(--white);
+        }
+        .form-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+        /* 捐赠历史 */
+        .donation-history {
+            background: var(--white);
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(248, 165, 194, 0.15);
+            padding: 20px;
+            margin-top: 30px;
+        }
+        .donation-history h3 {
+            font-size: 18px;
+            color: var(--primary-pink);
+            margin-bottom: 15px;
+        }
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .history-table th {
+            background: var(--user-color);
+            color: var(--white);
+            padding: 12px 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+        .history-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .history-table tr:hover {
+            background: rgba(76, 175, 80, 0.05);
+        }
+        /* 响应式适配 */
+        @media (max-width: 768px) {
+            .banner h1 {
+                font-size: 20px;
+            }
+            .banner {
+                height: 120px;
+            }
+            .nav {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            .nav-left {
+                width: 100%;
+                justify-content: flex-start;
+            }
+            .nav-right {
+                width: 100%;
+                justify-content: space-between;
+            }
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            .donation-guide {
+                padding: 20px;
+            }
+            .donation-form {
+                padding: 20px;
+            }
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            .form-actions {
+                flex-direction: column;
+            }
+            .history-table {
+                font-size: 12px;
+            }
+            .history-table th,
+            .history-table td {
+                padding: 8px 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 湖北大学专属Banner -->
+    <div class="banner">
+        <h1><a href="visitor.html" style="color: var(--white); cursor: pointer;">湖北大学流浪动物救助信息管理系统</a></h1>
+    </div>
+
+    <!-- 导航栏 -->
+    <div class="nav">
+        <div class="nav-left">
+            <a href="user-dashboard.html">首页</a>
+            <a href="user-adoption.html">领养申请</a>
+            <a href="user-donation.html" class="active">物资捐赠</a>
+            <a href="user-profile.html">个人中心</a>
+        </div>
+        <div class="nav-right">
+            <div class="user-info">
+                <span class="user-avatar">U</span>
+                <span id="userName">普通用户</span>
+            </div>
+            <a href="login.html" onclick="localStorage.removeItem('user')">退出登录</a>
+        </div>
+    </div>
+
+    <!-- 页面内容 -->
+    <div class="container">
+        <div class="page-header">
+            <h2>物资捐赠</h2>
+        </div>
+        
+        <!-- 捐赠指南 -->
+        <div class="donation-guide">
+            <h3>捐赠指南</h3>
+            <p>感谢您对湖北大学流浪动物救助工作的支持！以下是捐赠物资的相关信息：</p>
+            <ul>
+                <li>**捐赠物资类型**：猫粮、狗粮、猫砂、牵引绳、窝垫、玩具、医疗用品等</li>
+                <li>**捐赠方式**：线上预约，线下送达</li>
+                <li>**捐赠地点**：湖北大学动物救助站（具体地址：校园内指定地点）</li>
+                <li>**联系电话**：138-0013-8000</li>
+                <li>**工作时间**：周一至周日 9:00-18:00</li>
+            </ul>
+            <p>您的每一份捐赠都将帮助流浪动物获得更好的生活条件，感谢您的爱心！</p>
+        </div>
+        
+        <!-- 捐赠表单 -->
+        <div class="donation-form">
+            <h3>捐赠登记</h3>
+            <form>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="donorName">捐赠人姓名</label>
+                        <input type="text" id="donorName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="donorPhone">联系电话</label>
+                        <input type="tel" id="donorPhone" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="donationType">捐赠类型</label>
+                    <select id="donationType" required>
+                        <option value="">请选择</option>
+                        <option value="food">食物</option>
+                        <option value="supplies">用品</option>
+                        <option value="medical">医疗用品</option>
+                        <option value="other">其他</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="donationItems">捐赠物品</label>
+                    <textarea id="donationItems" placeholder="请详细描述捐赠物品，包括名称、数量等" required></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="donationDate">捐赠日期</label>
+                        <input type="date" id="donationDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="donationTime">捐赠时间</label>
+                        <input type="time" id="donationTime" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="donationLocation">捐赠地点</label>
+                    <input type="text" id="donationLocation" value="湖北大学动物救助站" required>
+                </div>
+                <div class="form-group">
+                    <label for="notes">备注</label>
+                    <textarea id="notes" placeholder="如有特殊说明，请在此填写"></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary">取消</button>
+                    <button type="submit" class="btn btn-primary">提交捐赠</button>
+                </div>
+            </form>
+        </div>
+        
+        <!-- 捐赠历史 -->
+        <div class="donation-history">
+            <h3>我的捐赠历史</h3>
+            <table class="history-table">
+                <thead>
+                    <tr>
+                        <th>捐赠编号</th>
+                        <th>捐赠日期</th>
+                        <th>捐赠类型</th>
+                        <th>捐赠物品</th>
+                        <th>状态</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>DON-2026-001</td>
+                        <td>2026-04-05</td>
+                        <td>食物</td>
+                        <td>猫粮 10kg</td>
+                        <td>已接收</td>
+                    </tr>
+                    <tr>
+                        <td>DON-2026-002</td>
+                        <td>2026-03-20</td>
+                        <td>用品</td>
+                        <td>猫砂 5袋</td>
+                        <td>已接收</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // 从本地存储中获取用户信息
+        const user = JSON.parse(localStorage.getItem('user'));
+        if (user) {
+            document.getElementById('userName').textContent = user.name || '普通用户';
+        } else {
+            // 如果没有用户信息，重定向到登录页面
+            window.location.href = 'login.html';
+        }
+
+        // 表单提交
+        document.querySelector('.donation-form form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            // 这里可以添加表单提交逻辑
+            alert('捐赠登记成功！我们会尽快与您联系确认。');
+        });
+    </script>
+</body>
+</html>

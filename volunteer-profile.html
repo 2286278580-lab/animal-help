@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>个人中心 - 志愿者仪表板</title>
+    <style>
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+            font-family:"Microsoft YaHei","PingFang SC",sans-serif;
+        }
+        /* 全局粉色系配色 */
+        :root {
+            --primary-pink: #f56fa9;
+            --light-pink: #f8a5c2;
+            --bg-pink: #fff5f7;
+            --white: #ffffff;
+            --gray: #666666;
+            --volunteer-color: #FF9800;
+            --volunteer-light: #FFB74D;
+        }
+        body {
+            background-color: var(--bg-pink);
+            line-height: 1.6;
+        }
+        /* 顶部Banner：湖北大学实景图 + 粉色渐变遮罩 */
+        .banner {
+            width: 100%;
+            height: 150px;
+            background: linear-gradient(rgba(245, 111, 169, 0.6), rgba(248, 165, 194, 0.5)), 
+                        url('hubu_picture.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            text-align: center;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .banner h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        /* 导航栏 */
+        .nav {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            background: var(--white);
+            padding: 15px 20px;
+            justify-content: space-between;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 99;
+        }
+        .nav-left {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .nav a {
+            padding: 8px 16px;
+            background: var(--white);
+            border: 2px solid var(--light-pink);
+            color: var(--primary-pink);
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 500;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        .nav a:hover {
+            background: var(--primary-pink);
+            color: var(--white);
+            border-color: var(--primary-pink);
+            transform: translateY(-2px);
+            box-shadow: 0 3px 8px rgba(245, 111, 169, 0.3);
+        }
+        .nav a.active {
+            background: var(--volunteer-color);
+            color: var(--white);
+            border-color: var(--volunteer-color);
+        }
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--volunteer-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-weight: 600;
+        }
+        /* 容器 */
+        .container {
+            padding: 30px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        /* 页面标题 */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        .page-header h2 {
+            font-size: 24px;
+            color: var(--primary-pink);
+            position: relative;
+        }
+        .page-header h2::after {
+            content: '';
+            width: 60px;
+            height: 4px;
+            background: var(--light-pink);
+            border-radius: 2px;
+            display: block;
+            margin-top: 8px;
+        }
+        /* 个人信息卡片 */
+        .profile-card {
+            background: var(--white);
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(248, 165, 194, 0.15);
+            padding: 30px;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: var(--volunteer-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-size: 48px;
+            font-weight: 600;
+        }
+        .profile-info {
+            flex: 1;
+        }
+        .profile-info h3 {
+            font-size: 24px;
+            color: var(--primary-pink);
+            margin-bottom: 15px;
+        }
+        .profile-info p {
+            font-size: 16px;
+            color: var(--gray);
+            margin-bottom: 10px;
+        }
+        .profile-info .label {
+            font-weight: 600;
+            color: var(--volunteer-color);
+        }
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn-primary {
+            background: var(--volunteer-color);
+            color: var(--white);
+        }
+        .btn-primary:hover {
+            background: var(--volunteer-light);
+            transform: translateY(-2px);
+            box-shadow: 0 3px 8px rgba(255, 152, 0, 0.3);
+        }
+        /* 服务统计 */
+        .stats-card {
+            background: var(--white);
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(248, 165, 194, 0.15);
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        .stats-card h3 {
+            font-size: 20px;
+            color: var(--primary-pink);
+            margin-bottom: 20px;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        .stat-item {
+            text-align: center;
+            padding: 20px;
+            background: rgba(255, 152, 0, 0.05);
+            border-radius: 8px;
+        }
+        .stat-value {
+            font-size: 32px;
+            font-weight: 600;
+            color: var(--volunteer-color);
+            margin-bottom: 5px;
+        }
+        .stat-label {
+            font-size: 14px;
+            color: var(--gray);
+        }
+        /* 信息更新表单 */
+        .update-form {
+            background: var(--white);
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(248, 165, 194, 0.15);
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        .update-form h3 {
+            font-size: 20px;
+            color: var(--primary-pink);
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: var(--gray);
+        }
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid var(--light-pink);
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        .form-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+        .btn-secondary {
+            background: var(--white);
+            color: var(--volunteer-color);
+            border: 2px solid var(--volunteer-color);
+        }
+        .btn-secondary:hover {
+            background: var(--volunteer-color);
+            color: var(--white);
+        }
+        /* 服务记录 */
+        .service-record {
+            background: var(--white);
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(248, 165, 194, 0.15);
+            padding: 20px;
+            margin-top: 30px;
+        }
+        .service-record h3 {
+            font-size: 18px;
+            color: var(--primary-pink);
+            margin-bottom: 15px;
+        }
+        .record-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .record-table th {
+            background: var(--volunteer-color);
+            color: var(--white);
+            padding: 12px 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+        .record-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .record-table tr:hover {
+            background: rgba(255, 152, 0, 0.05);
+        }
+        /* 响应式适配 */
+        @media (max-width: 768px) {
+            .banner h1 {
+                font-size: 20px;
+            }
+            .banner {
+                height: 120px;
+            }
+            .nav {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            .nav-left {
+                width: 100%;
+                justify-content: flex-start;
+            }
+            .nav-right {
+                width: 100%;
+                justify-content: space-between;
+            }
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            .profile-card {
+                flex-direction: column;
+                text-align: center;
+                gap: 20px;
+            }
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .update-form {
+                padding: 20px;
+            }
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            .form-actions {
+                flex-direction: column;
+            }
+            .record-table {
+                font-size: 12px;
+            }
+            .record-table th,
+            .record-table td {
+                padding: 8px 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 湖北大学专属Banner -->
+    <div class="banner">
+        <h1><a href="visitor.html" style="color: var(--white); cursor: pointer;">湖北大学流浪动物救助信息管理系统</a></h1>
+    </div>
+
+    <!-- 导航栏 -->
+    <div class="nav">
+        <div class="nav-left">
+            <a href="volunteer-dashboard.html">首页</a>
+            <a href="volunteer-tasks.html">任务管理</a>
+            <a href="volunteer-animals.html">动物管理</a>
+            <a href="volunteer-profile.html" class="active">个人中心</a>
+        </div>
+        <div class="nav-right">
+            <div class="user-info">
+                <span class="user-avatar">V</span>
+                <span id="userName">志愿者</span>
+            </div>
+            <a href="login.html" onclick="localStorage.removeItem('user')">退出登录</a>
+        </div>
+    </div>
+
+    <!-- 页面内容 -->
+    <div class="container">
+        <div class="page-header">
+            <h2>个人中心</h2>
+        </div>
+        
+        <!-- 个人信息卡片 -->
+        <div class="profile-card">
+            <div class="profile-avatar" id="profileAvatar">V</div>
+            <div class="profile-info">
+                <h3 id="profileName">志愿者</h3>
+                <p><span class="label">用户名：</span><span id="profileUsername">volunteer1</span></p>
+                <p><span class="label">电话：</span><span id="profilePhone">13800138002</span></p>
+                <p><span class="label">邮箱：</span><span id="profileEmail">volunteer1@example.com</span></p>
+                <p><span class="label">学号：</span><span id="profileStudentId">2024001</span></p>
+                <p><span class="label">学院/专业：</span><span id="profileDepartment">计算机学院/计科2401</span></p>
+                <p><span class="label">宿舍楼：</span><span id="profileDorm">3号宿舍楼</span></p>
+                <p><span class="label">技能标签：</span><span id="profileSkills">诱捕、喂药、摄影</span></p>
+                <p><span class="label">可参与时间：</span><span id="profileTime">周一、周三 第5-6节</span></p>
+                <p><span class="label">注册时间：</span><span id="profileCreated">2026-01-01</span></p>
+                <button class="btn btn-primary" onclick="toggleUpdateForm()">编辑信息</button>
+            </div>
+        </div>
+        
+        <!-- 服务统计 -->
+        <div class="stats-card">
+            <h3>服务统计</h3>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-value">12</div>
+                    <div class="stat-label">已完成任务</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">28</div>
+                    <div class="stat-label">服务时长(小时)</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">85%</div>
+                    <div class="stat-label">任务完成率</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">3</div>
+                    <div class="stat-label">获得表扬</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 信息更新表单 -->
+        <div class="update-form" id="updateForm" style="display: none;">
+            <h3>更新个人信息</h3>
+            <form>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="updateName">姓名</label>
+                        <input type="text" id="updateName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="updatePhone">电话</label>
+                        <input type="tel" id="updatePhone" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="updateEmail">邮箱</label>
+                        <input type="email" id="updateEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="updateStudentId">学号</label>
+                        <input type="text" id="updateStudentId" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="updateDepartment">学院/专业</label>
+                        <input type="text" id="updateDepartment" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="updateDorm">宿舍楼</label>
+                        <input type="text" id="updateDorm" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="updateSkills">技能标签</label>
+                    <input type="text" id="updateSkills" placeholder="请用逗号分隔多个技能">
+                </div>
+                <div class="form-group">
+                    <label for="updateTime">可参与时间</label>
+                    <input type="text" id="updateTime" placeholder="例如：周一、周三 第5-6节">
+                </div>
+                <div class="form-group">
+                    <label for="updatePassword">修改密码</label>
+                    <input type="password" id="updatePassword" placeholder="留空表示不修改">
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="toggleUpdateForm()">取消</button>
+                    <button type="submit" class="btn btn-primary">保存修改</button>
+                </div>
+            </form>
+        </div>
+        
+        <!-- 服务记录 -->
+        <div class="service-record">
+            <h3>服务记录</h3>
+            <table class="record-table">
+                <thead>
+                    <tr>
+                        <th>时间</th>
+                        <th>类型</th>
+                        <th>内容</th>
+                        <th>时长(小时)</th>
+                        <th>状态</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>2026-04-15</td>
+                        <td>任务</td>
+                        <td>喂食流浪猫</td>
+                        <td>2</td>
+                        <td>进行中</td>
+                    </tr>
+                    <tr>
+                        <td>2026-04-14</td>
+                        <td>任务</td>
+                        <td>清理猫窝</td>
+                        <td>1.5</td>
+                        <td>已完成</td>
+                    </tr>
+                    <tr>
+                        <td>2026-04-13</td>
+                        <td>任务</td>
+                        <td>带猫去医院</td>
+                        <td>3</td>
+                        <td>已完成</td>
+                    </tr>
+                    <tr>
+                        <td>2026-04-10</td>
+                        <td>任务</td>
+                        <td>诱捕流浪猫</td>
+                        <td>2</td>
+                        <td>已完成</td>
+                    </tr>
+                    <tr>
+                        <td>2026-04-05</td>
+                        <td>任务</td>
+                        <td>喂食流浪狗</td>
+                        <td>1.5</td>
+                        <td>已完成</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // 从本地存储中获取用户信息
+        const user = JSON.parse(localStorage.getItem('user'));
+        if (user) {
+            document.getElementById('userName').textContent = user.name || '志愿者';
+            document.getElementById('profileName').textContent = user.name || '志愿者';
+            document.getElementById('profileUsername').textContent = user.username || 'volunteer1';
+            document.getElementById('profilePhone').textContent = user.phone || '13800138002';
+            document.getElementById('profileEmail').textContent = user.email || 'volunteer1@example.com';
+            document.getElementById('profileStudentId').textContent = user.student_id || '2024001';
+            document.getElementById('profileDepartment').textContent = user.department || '计算机学院/计科2401';
+            document.getElementById('profileDorm').textContent = user.dorm || '3号宿舍楼';
+            document.getElementById('profileSkills').textContent = user.skills || '诱捕、喂药、摄影';
+            document.getElementById('profileTime').textContent = user.available_time || '周一、周三 第5-6节';
+            document.getElementById('profileCreated').textContent = user.created_at || '2026-01-01';
+            document.getElementById('profileAvatar').textContent = (user.name || 'V')[0].toUpperCase();
+        } else {
+            // 如果没有用户信息，重定向到登录页面
+            window.location.href = 'login.html';
+        }
+
+        // 切换更新表单显示/隐藏
+        function toggleUpdateForm() {
+            const form = document.getElementById('updateForm');
+            if (form.style.display === 'none') {
+                // 填充表单数据
+                document.getElementById('updateName').value = user.name || '';
+                document.getElementById('updatePhone').value = user.phone || '';
+                document.getElementById('updateEmail').value = user.email || '';
+                document.getElementById('updateStudentId').value = user.student_id || '';
+                document.getElementById('updateDepartment').value = user.department || '';
+                document.getElementById('updateDorm').value = user.dorm || '';
+                document.getElementById('updateSkills').value = user.skills || '';
+                document.getElementById('updateTime').value = user.available_time || '';
+                form.style.display = 'block';
+            } else {
+                form.style.display = 'none';
+            }
+        }
+
+        // 表单提交
+        document.querySelector('#updateForm form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            // 这里可以添加表单提交逻辑
+            alert('个人信息更新成功！');
+            toggleUpdateForm();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>安全事件管理</title>
+    <style>
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+            font-family:"Microsoft YaHei","PingFang SC",sans-serif;
+        }
+        /* 全局粉色系配色 */
+        :root {
+            --primary-pink: #f56fa9;
+            --light-pink: #f8a5c2;
+            --bg-pink: #fff5f7;
+            --white: #ffffff;
+            --gray: #666666;
+        }
+        body {
+            background-color: var(--bg-pink);
+            line-height: 1.6;
+        }
+        /* 顶部Banner：湖北大学实景图 + 粉色渐变遮罩 */
+        .banner {
+            width: 100%;
+            height: 380px;
+            background: linear-gradient(rgba(245, 111, 169, 0.6), rgba(248, 165, 194, 0.5)), 
+                        url('hubu_picture.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            text-align: center;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .banner h1 {
+            font-size: 42px;
+            margin-bottom: 15px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        .banner p {
+            font-size: 18px;
+            max-width: 800px;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.15);
+        }
+        /* 导航栏 */
+        .nav {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            background: var(--white);
+            padding: 18px 30px;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 99;
+        }
+        .nav a {
+            padding: 10px 20px;
+            background: var(--white);
+            border: 2px solid var(--light-pink);
+            color: var(--primary-pink);
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        .nav a:hover {
+            background: var(--primary-pink);
+            color: var(--white);
+            border-color: var(--primary-pink);
+            transform: translateY(-2px);
+            box-shadow: 0 3px 8px rgba(245, 111, 169, 0.3);
+        }
+        /* 容器 */
+        .container {
+            padding: 40px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .container h2 {
+            text-align: center;
+            font-size: 32px;
+            color: var(--primary-pink);
+            margin-bottom: 40px;
+            position: relative;
+        }
+        .container h2::after {
+            content: '';
+            width: 80px;
+            height: 4px;
+            background: var(--light-pink);
+            border-radius: 2px;
+            display: block;
+            margin: 10px auto 0;
+        }
+        /* 专业数据表通用样式 - 粉色系适配 */ 
+        .data-table { 
+          width: 100%; 
+          border-collapse: collapse; 
+          margin: 20px 0; 
+          background: #fff; 
+          border-radius: 8px; 
+          overflow: hidden; 
+          box-shadow: 0 2px 10px rgba(245, 111, 169, 0.1); 
+        } 
+        .data-table thead { 
+          background: #f56fa9; 
+          color: #fff; 
+          font-size: 15px; 
+          font-weight: 600; 
+        } 
+        .data-table th, .data-table td { 
+          padding: 12px 15px; 
+          text-align: left; 
+          border-bottom: 1px solid #f8a5c2; 
+        } 
+        .data-table tbody tr:nth-child(even) { 
+          background: #fff5f7; 
+        } 
+        .data-table tbody tr:hover { 
+          background: rgba(248, 165, 194, 0.2); 
+        } 
+        .data-table .pk { color: #e74c3c; font-weight: 600; } 
+        .data-table .fk { color: #3498db; font-weight: 600; } 
+        .data-table .not-null { color: #f39c12; } 
+        .table-title { 
+          font-size: 18px; 
+          color: #f56fa9; 
+          font-weight: 600; 
+          margin: 30px 0 10px; 
+          border-left: 4px solid #f56fa9; 
+          padding-left: 10px; 
+        } 
+        .table-desc { 
+          font-size: 14px; 
+          color: #666; 
+          margin-bottom: 10px; 
+        } 
+        .safe-box { 
+          margin-top: 40px; 
+        } 
+        /* 响应式适配 */
+        @media (max-width: 768px) {
+            .banner h1 {
+                font-size: 28px;
+            }
+            .banner {
+                height: 300px;
+            }
+            .nav {
+                padding: 15px;
+            }
+            .nav a {
+                padding: 8px 15px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 湖北大学专属Banner -->
+    <div class="banner">
+        <h1><a href="visitor.html" style="color: var(--white); text-decoration: none; cursor: pointer;">湖北大学流浪动物救助信息管理系统</a></h1>
+        <p>守护校园生灵 | 规范救助管理 | 共建和谐湖大 | 透明化公益服务</p>
+    </div>
+
+    <!-- 导航栏 -->
+    <div class="nav">
+        <a href="index.html">首页</a>
+        <a href="animal.html">动物档案</a>
+        <a href="tnr.html">TNR管理</a>
+        <a href="adopt.html">领养管理</a>
+        <a href="volunteer.html">志愿者管理</a>
+        <a href="supply.html">物资管理</a>
+        <a href="reimburse.html">报销管理</a>
+        <a href="safety.html">安全事件</a>
+    </div>
+
+    <!-- 安全事件管理内容 -->
+    <div class="container">
+        <h2>安全与投诉管理</h2>
+        
+        <!-- 操作栏 -->
+        <div class="action-bar" style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;">
+            <button class="btn btn-primary" onclick="showComplaintForm()" style="padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; transition: all 0.3s ease; background: var(--primary-pink); color: var(--white);">提交投诉</button>
+            <button class="btn btn-secondary" onclick="refreshSafety()" style="padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; transition: all 0.3s ease; background: var(--white); color: var(--primary-pink); border: 1px solid var(--primary-pink);">刷新数据</button>
+        </div>
+        
+        <!-- 投诉申请表单 -->
+        <div id="complaintForm" class="form-container" style="display: none; background: var(--white); padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(245, 111, 169, 0.1); margin-bottom: 20px;">
+            <h3>投诉申请</h3>
+            <form id="complaintApplicationForm">
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <label for="feedingPointId" style="display: block; margin-bottom: 5px; font-weight: 500; color: var(--gray);">投喂点 <span style="color: red;">*</span></label>
+                    <select id="feedingPointId" name="feedingPointId" required style="width: 100%; padding: 8px; border: 1px solid var(--light-pink); border-radius: 4px; font-size: 14px;">
+                        <option value="">请选择投喂点</option>
+                        <option value="Feed-01">Feed-01（3号宿舍楼后花园）</option>
+                        <option value="Feed-03">Feed-03（图书馆前广场）</option>
+                    </select>
+                </div>
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <label for="complaintContent" style="display: block; margin-bottom: 5px; font-weight: 500; color: var(--gray);">投诉内容 <span style="color: red;">*</span></label>
+                    <textarea id="complaintContent" name="complaintContent" required rows="4" style="width: 100%; padding: 8px; border: 1px solid var(--light-pink); border-radius: 4px; font-size: 14px;"></textarea>
+                </div>
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <label for="complainant" style="display: block; margin-bottom: 5px; font-weight: 500; color: var(--gray);">投诉人 <span style="color: red;">*</span></label>
+                    <input type="text" id="complainant" name="complainant" required style="width: 100%; padding: 8px; border: 1px solid var(--light-pink); border-radius: 4px; font-size: 14px;">
+                </div>
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <label for="contactInfo" style="display: block; margin-bottom: 5px; font-weight: 500; color: var(--gray);">联系方式 <span style="color: red;">*</span></label>
+                    <input type="tel" id="contactInfo" name="contactInfo" required style="width: 100%; padding: 8px; border: 1px solid var(--light-pink); border-radius: 4px; font-size: 14px;">
+                </div>
+                <div class="action-bar" style="display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap;">
+                    <button type="submit" class="btn btn-primary" style="padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; transition: all 0.3s ease; background: var(--primary-pink); color: var(--white);">提交投诉</button>
+                    <button type="button" class="btn btn-secondary" onclick="hideComplaintForm()" style="padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; transition: all 0.3s ease; background: var(--white); color: var(--primary-pink); border: 1px solid var(--primary-pink);">取消</button>
+                </div>
+            </form>
+        </div>
+        
+        <div class="table-title">伤人事件记录</div>
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>事件编号</th>
+                    <th>涉事动物</th>
+                    <th>事发时间</th>
+                    <th>事发地点</th>
+                    <th>受伤学生</th>
+                    <th>疫苗状态</th>
+                    <th>处理结果</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="pk">INJ-001</td>
+                    <td class="fk">CAMPUS-DOG-001</td>
+                    <td>2026-04-10</td>
+                    <td>5教东侧草坪</td>
+                    <td>王某 2024005</td>
+                    <td>已接种狂犬</td>
+                    <td>送医处理，隔离观察</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="safe-box">
+            <div class="table-title">投诉记录</div>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>投诉编号</th>
+                        <th>投喂点</th>
+                        <th>投诉内容</th>
+                        <th>投诉人</th>
+                        <th>处理状态</th>
+                        <th>处理结果</th>
+                        <th>处理时间</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody id="complaintTableBody">
+                    <tr>
+                        <td class="pk">COM-001</td>
+                        <td class="fk">Feed-01</td>
+                        <td>夜间叫春扰民</td>
+                        <td>3号楼学生</td>
+                        <td>已处理</td>
+                        <td>调整投喂时间，加强管理</td>
+                        <td>2026-04-08</td>
+                        <td>
+                            <button class="btn btn-secondary" onclick="processComplaint('COM-001')" style="padding: 4px 8px; border: none; border-radius: 4px; cursor: pointer; font-size: 12px; transition: all 0.3s ease; background: var(--white); color: var(--primary-pink); border: 1px solid var(--primary-pink);">处理</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <script>
+        // 模拟投诉记录数据
+        let complaints = [
+            {
+                id: 'COM-001',
+                feedingPointId: 'Feed-01',
+                content: '夜间叫春扰民',
+                complainant: '3号楼学生',
+                status: '已处理',
+                result: '调整投喂时间，加强管理',
+                processingTime: '2026-04-08',
+                submittedTime: '2026-04-07'
+            }
+        ];
+        
+        // 显示投诉申请表单
+        function showComplaintForm() {
+            document.getElementById('complaintForm').style.display = 'block';
+            document.getElementById('complaintApplicationForm').reset();
+        }
+        
+        // 隐藏投诉申请表单
+        function hideComplaintForm() {
+            document.getElementById('complaintForm').style.display = 'none';
+        }
+        
+        // 提交投诉申请
+        document.getElementById('complaintApplicationForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const feedingPointId = document.getElementById('feedingPointId').value;
+            const complaintContent = document.getElementById('complaintContent').value;
+            const complainant = document.getElementById('complainant').value;
+            const contactInfo = document.getElementById('contactInfo').value;
+            
+            // 表单验证
+            if (!feedingPointId || !complaintContent || !complainant || !contactInfo) {
+                alert('请填写所有必填项');
+                return;
+            }
+            
+            // 生成投诉编号
+            const sequence = (complaints.length + 1).toString().padStart(3, '0');
+            const complaintId = `COM-${sequence}`;
+            
+            // 创建新的投诉记录
+            const newComplaint = {
+                id: complaintId,
+                feedingPointId: feedingPointId,
+                content: complaintContent,
+                complainant: complainant,
+                status: '待处理',
+                result: '',
+                processingTime: '',
+                submittedTime: new Date().toISOString().slice(0, 10)
+            };
+            
+            complaints.push(newComplaint);
+            alert('投诉提交成功！');
+            hideComplaintForm();
+            refreshSafety();
+        });
+        
+        // 处理投诉
+        function processComplaint(complaintId) {
+            const complaint = complaints.find(c => c.id === complaintId);
+            if (complaint) {
+                const result = prompt('请输入处理结果：');
+                if (result) {
+                    complaint.status = '已处理';
+                    complaint.result = result;
+                    complaint.processingTime = new Date().toISOString().slice(0, 10);
+                    alert('投诉处理完成！');
+                    refreshSafety();
+                }
+            }
+        }
+        
+        // 检查24小时未处理的投诉
+        function check24HourComplaints() {
+            const now = new Date();
+            const complaintsToRemind = complaints.filter(complaint => {
+                if (complaint.status === '待处理') {
+                    const submittedTime = new Date(complaint.submittedTime);
+                    const diffHours = (now - submittedTime) / (1000 * 60 * 60);
+                    return diffHours >= 24;
+                }
+                return false;
+            });
+            
+            if (complaintsToRemind.length > 0) {
+                let message = '以下投诉已超过24小时未处理，请及时处理：\n';
+                complaintsToRemind.forEach(complaint => {
+                    message += `${complaint.id} - ${complaint.content}（${complaint.submittedTime}）\n`;
+                });
+                alert(message);
+            }
+        }
+        
+        // 刷新安全数据
+        function refreshSafety() {
+            const tbody = document.getElementById('complaintTableBody');
+            tbody.innerHTML = '';
+            
+            complaints.forEach(complaint => {
+                // 检查是否超过24小时未处理
+                let statusClass = '';
+                if (complaint.status === '待处理') {
+                    const now = new Date();
+                    const submittedTime = new Date(complaint.submittedTime);
+                    const diffHours = (now - submittedTime) / (1000 * 60 * 60);
+                    if (diffHours >= 24) {
+                        statusClass = 'style="color: red; font-weight: bold;"';
+                    }
+                }
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="pk">${complaint.id}</td>
+                    <td class="fk">${complaint.feedingPointId}</td>
+                    <td>${complaint.content}</td>
+                    <td>${complaint.complainant}</td>
+                    <td ${statusClass}>${complaint.status}</td>
+                    <td>${complaint.result || '-'}</td>
+                    <td>${complaint.processingTime || '-'}</td>
+                    <td>
+                        ${complaint.status === '待处理' ? `<button class="btn btn-secondary" onclick="processComplaint('${complaint.id}')" style="padding: 4px 8px; border: none; border-radius: 4px; cursor: pointer; font-size: 12px; transition: all 0.3s ease; background: var(--white); color: var(--primary-pink); border: 1px solid var(--primary-pink);">处理</button>` : '-'}
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+        
+        // 页面加载时刷新数据并检查24小时未处理的投诉
+        document.addEventListener('DOMContentLoaded', function() {
+            refreshSafety();
+            check24HourComplaints();
+        });
+    </script>
+</body>
+</html>
